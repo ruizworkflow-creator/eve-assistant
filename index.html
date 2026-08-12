@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #05070d;
+  color: #f5f7ff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+}
+
+.eve {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 25%, #18233d 0%, #090d18 38%, #05070d 75%);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 22px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 4px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #72e8ff;
+  box-shadow: 0 0 15px #72e8ff;
+  margin-right: 11px;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 35px 20px 25px;
+}
+
+.orb {
+  width: 155px;
+  height: 155px;
+  border-radius: 50%;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    radial-gradient(circle at 35% 30%,
+      #d8fbff 0%,
+      #65d9ee 8%,
+      #177c9d 28%,
+      #0c263b 55%,
+      #07111e 72%);
+  box-shadow:
+    0 0 25px rgba(77, 220, 255, .8),
+    0 0 80px rgba(52, 190, 255, .35);
+  animation: breathe 4s ease-in-out infinite;
+  transition: .3s;
+}
+
+.orb-core {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #d9fbff;
+  box-shadow:
+    0 0 12px #fff,
+    0 0 35px #6cecff;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.listening {
+  animation: listening .7s ease-in-out infinite alternate;
+}
+
+@keyframes listening {
+  from {
+    transform: scale(1);
+    box-shadow:
+      0 0 30px rgba(77, 220, 255, .8),
+      0 0 80px rgba(52, 190, 255, .35);
+  }
+
+  to {
+    transform: scale(1.13);
+    box-shadow:
+      0 0 45px rgba(77, 220, 255, 1),
+      0 0 120px rgba(52, 190, 255, .55);
+  }
+}
+
+.title {
+  margin-top: 30px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.status {
+  margin-top: 8px;
+  color: #8d96aa;
+  font-size: 15px;
+}
+
+.conversation {
+  width: 100%;
+  max-width: 520px;
+  flex: 1;
+  margin-top: 25px;
+  overflow-y: auto;
+  padding-bottom: 10px;
+}
+
+.message {
+  padding: 13px 16px;
+  margin: 9px 0;
+  border-radius: 17px;
+  line-height: 1.45;
+  max-width: 85%;
+  animation: appear .2s ease-out;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user {
+  margin-left: auto;
+  background: #17384a;
+  border: 1px solid #23566b;
+}
+
+.eve-message {
+  margin-right: auto;
+  background: rgba(20, 28, 43, .85);
+  border: 1px solid #27364b;
+  color: #dce4f1;
+}
+
+.input-area {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  gap: 9px;
+  margin-top: 10px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 15px 18px;
+  border-radius: 28px;
+  border: 1px solid #263247;
+  background: rgba(10, 15, 25, .9);
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #56dfff;
+  box-shadow: 0 0 15px rgba(86, 223, 255, .15);
+}
+
+input::placeholder {
+  color: #657087;
+}
+
+.send {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: #55dffb;
+  color: #06101a;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.mic {
+  width: 62px;
+  height: 62px;
+  margin-top: 13px;
+  border-radius: 50%;
+  border: 1px solid #304057;
+  background: rgba(18, 25, 39, .95);
+  color: white;
+  font-size: 25px;
+}
+
+.mic:active,
+.send:active {
+  transform: scale(.93);
+}
+
+.footer {
+  margin-top: 12px;
+  color: #505c70;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="eve">
+
+  <div class="header">
+    <div class="status-dot"></div>
+    EVE
+  </div>
+
+  <main>
+
+    <div id="orb" class="orb">
+      <div class="orb-core"></div>
+    </div>
+
+    <div class="title">I'm here, Syd.</div>
+    <div id="status" class="status">Ready when you are.</div>
+
+    <div id="conversation" class="conversation"></div>
+
+    <div class="input-area">
+      <input
+        id="input"
+        type="text"
+        placeholder="Talk to EVE..."
+        autocomplete="off"
+      >
+
+      <button id="send" class="send">↑</button>
+    </div>
+
+    <button id="mic" class="mic">🎙️</button>
+
+    <div class="footer">EVE CORE • LOCAL MODE</div>
+
+  </main>
+
+</div>
+
+<script>
+
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+const mic = document.getElementById("mic");
+const conversation = document.getElementById("conversation");
+const status = document.getElementById("status");
+const orb = document.getElementById("orb");
+
+
+// -----------------------------
+// MEMORY
+// -----------------------------
+
+let memory = JSON.parse(
+  localStorage.getItem("eveMemory") || "{}"
+);
+
+function saveMemory() {
+  localStorage.setItem(
+    "eveMemory",
+    JSON.stringify(memory)
+  );
+}
+
+
+// -----------------------------
+// CONVERSATION
+// -----------------------------
+
+function addMessage(text, type) {
+
+  const message = document.createElement("div");
+
+  message.className =
+    "message " +
+    (type === "user" ? "user" : "eve-message");
+
+  message.textContent = text;
+
+  conversation.appendChild(message);
+
+  conversation.scrollTop =
+    conversation.scrollHeight;
+}
+
+
+// -----------------------------
+// EVE'S LOCAL BRAIN
+// -----------------------------
+
+function think(text) {
+
+  const message = text.toLowerCase().trim();
+
+
+  // Greeting
+
+  if (
+    message === "eve" ||
+    message.includes("hey eve") ||
+    message.includes("hello eve")
+  ) {
+    return "I'm here, Syd. What are we getting into?";
+  }
+
+
+  // Name
+
+  if (message.includes("my name")) {
+
+    return "You're Syd. That one's easy.";
+  }
+
+
+  // Identity
+
+  if (
+    message.includes("who are you") ||
+    message.includes("what are you")
+  ) {
+
+    return "I'm EVE — your personal AI assistant. Right now I'm running in local mode. My brain is small, but we're building.";
+  }
+
+
+  // Memory command
+
+  if (message.startsWith("remember that ")) {
+
+    const memoryText =
+      text.substring(14).trim();
+
+    memory.notes =
+      memory.notes || [];
+
+    memory.notes.push(memoryText);
+
+    saveMemory();
+
+    return "Got it, Syd. I've stored that in my local memory.";
+  }
+
+
+  // Recall
+
+  if (
+    message.includes("what do you remember") ||
+    message.includes("remember anything")
+  ) {
+
+    if (
+      !memory.notes ||
+      memory.notes.length === 0
+    ) {
+
+      return "Nothing permanent yet. Give me something worth remembering.";
+    }
+
+    return "Here's what I remember: " +
+      memory.notes.join("; ");
+  }
+
+
+  // Forget everything
+
+  if (
+    message === "forget everything" ||
+    message === "forget all my memories"
+  ) {
+
+    memory = {};
+
+    saveMemory();
+
+    return "Done. Local memory cleared.";
+  }
+
+
+  // Capabilities
+
+  if (
+    message.includes("what can you do")
+  ) {
+
+    return "Right now I can talk, remember things locally, respond by voice, and run without an API. We're building the rest.";
+  }
+
+
+  // Help
+
+  if (
+    message === "help" ||
+    message.includes("what should i do")
+  ) {
+
+    return "Give me a task, Syd. Try 'remember that I want to work on photography tonight.'";
+  }
+
+
+  // Default
+
+  return "I heard you, Syd. My full AI brain isn't connected yet, but my local core is working.";
+}
+
+
+// -----------------------------
+// SPEAK
+// -----------------------------
+
+function speak(text) {
+
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const voice =
+    new SpeechSynthesisUtterance(text);
+
+  voice.rate = .95;
+  voice.pitch = 1.0;
+
+  voice.onstart = () => {
+
+    status.textContent =
+      "Speaking...";
+
+    orb.classList.add("listening");
+  };
+
+  voice.onend = () => {
+
+    status.textContent =
+      "Ready when you are.";
+
+    orb.classList.remove("listening");
+  };
+
+  speechSynthesis.speak(voice);
+}
+
+
+// -----------------------------
+// SEND MESSAGE
+// -----------------------------
+
+function sendMessage() {
+
+  const text =
+    input.value.trim();
+
+  if (!text) return;
+
+  addMessage(text, "user");
+
+  input.value = "";
+
+  status.textContent =
+    "Thinking...";
+
+  orb.classList.add("listening");
+
+  setTimeout(() => {
+
+    const response =
+      think(text);
+
+    addMessage(
+      response,
+      "eve"
+    );
+
+    orb.classList.remove(
+      "listening"
+    );
+
+    status.textContent =
+      "Ready when you are.";
+
+    speak(response);
+
+  }, 500);
+}
+
+
+send.addEventListener(
+  "click",
+  sendMessage
+);
+
+
+input.addEventListener(
+  "keydown",
+  event => {
+
+    if (event.key === "Enter") {
+      sendMessage();
+    }
+
+  }
+);
+
+
+// -----------------------------
+// VOICE INPUT
+// -----------------------------
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+
+  const recognition =
+    new SpeechRecognition();
+
+  recognition.lang =
+    "en-US";
+
+  recognition.continuous =
+    false;
+
+  recognition.interimResults =
+    false;
+
+
+  mic.addEventListener(
+    "click",
+    () => {
+
+      status.textContent =
+        "Listening...";
+
+      orb.classList.add(
+        "listening"
+      );
+
+      recognition.start();
+
+    }
+  );
+
+
+  recognition.onresult =
+    event => {
+
+      const transcript =
+        event.results[0][0].transcript;
+
+      input.value =
+        transcript;
+
+      orb.classList.remove(
+        "listening"
+      );
+
+      sendMessage();
+
+    };
+
+
+  recognition.onerror =
+    () => {
+
+      status.textContent =
+        "I couldn't hear that.";
+
+      orb.classList.remove(
+        "listening"
+      );
+
+    };
+
+} else {
+
+  mic.addEventListener(
+    "click",
+    () => {
+
+      status.textContent =
+        "Voice input isn't supported here yet.";
+
+    }
+  );
+
+}
+
+
+// -----------------------------
+// FIRST GREETING
+// -----------------------------
+
+setTimeout(() => {
+
+  addMessage(
+    "Good. You're here. Let's build something interesting.",
+    "eve"
+  );
+
+}, 600);
+
+</script>
+
+</body>
+</html>
