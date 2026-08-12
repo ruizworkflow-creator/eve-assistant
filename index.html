@@ -362,17 +362,21 @@ function think(text) {
 
   if (message.startsWith("remember that ")) {
 
-  const item =
-    original.substring(14).trim();
+  const item = original
+    .substring(14)
+    .trim();
 
-  const alreadyRemembered =
-    memory.notes.some(
-      note =>
-        note.text.toLowerCase() === item.toLowerCase()
-    );
+  if (!memory.notes) {
+    memory.notes = [];
+  }
+
+  const alreadyRemembered = memory.notes.some(function(note) {
+    return note.text &&
+      note.text.toLowerCase() === item.toLowerCase();
+  });
 
   if (alreadyRemembered) {
-    return `I already have that one, Syd.`;
+    return "I already have that one, Syd.";
   }
 
   memory.notes.push({
@@ -382,7 +386,7 @@ function think(text) {
 
   saveMemory();
 
-  return `Got it, Syd. I'll remember that: "${item}"`;
+  return "Got it, Syd. I'll remember that: " + item;
 }
 
 
