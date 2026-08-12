@@ -329,116 +329,188 @@ function addMessage(text, type) {
 
 function think(text) {
 
-  const message = text.toLowerCase().trim();
+  const original = text.trim();
+  const message = original.toLowerCase();
 
-
-  // Greeting
+  // -------------------------
+  // IDENTITY
+  // -------------------------
 
   if (
     message === "eve" ||
     message.includes("hey eve") ||
     message.includes("hello eve")
   ) {
-    return "I'm here, Syd. What are we getting into?";
+    return "I'm here, Syd. What's on your mind?";
   }
-
-
-  // Name
-
-  if (message.includes("my name")) {
-
-    return "You're Syd. That one's easy.";
-  }
-
-
-  // Identity
 
   if (
     message.includes("who are you") ||
     message.includes("what are you")
   ) {
+    return "I'm EVE — your personal assistant. I'm still growing, but my core is yours.";
+  }
 
-    return "I'm EVE — your personal AI assistant. Right now I'm running in local mode. My brain is small, but we're building.";
+  if (message.includes("my name")) {
+    return "You're Syd. Obviously. I know who I'm talking to.";
   }
 
 
-  // Memory command
+  // -------------------------
+  // REMEMBER
+  // -------------------------
 
   if (message.startsWith("remember that ")) {
 
-    const memoryText =
-      text.substring(14).trim();
+    const item =
+      original.substring(14).trim();
 
-    memory.notes =
-      memory.notes || [];
-
-    memory.notes.push(memoryText);
+    memory.notes.push({
+      text: item,
+      date: new Date().toISOString()
+    });
 
     saveMemory();
 
-    return "Got it, Syd. I've stored that in my local memory.";
+    return `Got it, Syd. I'll remember that: "${item}"`;
   }
 
 
-  // Recall
+  // -------------------------
+  // GOAL
+  // -------------------------
+
+  if (
+    message.startsWith("my goal is ") ||
+    message.startsWith("remember my goal ")
+  ) {
+
+    const goal =
+      original
+        .replace(/^my goal is /i, "")
+        .replace(/^remember my goal /i, "")
+        .trim();
+
+    memory.goals.push({
+      text: goal,
+      completed: false,
+      date: new Date().toISOString()
+    });
+
+    saveMemory();
+
+    return `Goal saved. I'll keep that one in mind: "${goal}"`;
+  }
+
+
+  // -------------------------
+  // TASK
+  // -------------------------
+
+  if (
+    message.startsWith("remind me to ") ||
+    message.startsWith("i need to ")
+  ) {
+
+    const task =
+      original
+        .replace(/^remind me to /i, "")
+        .replace(/^i need to /i, "")
+        .trim();
+
+    memory.tasks.push({
+      text: task,
+      completed: false,
+      date: new Date().toISOString()
+    });
+
+    saveMemory();
+
+    return `I've added that to your tasks: "${task}"`;
+  }
+
+
+  // -------------------------
+  // SHOW MEMORY
+  // -------------------------
 
   if (
     message.includes("what do you remember") ||
-    message.includes("remember anything")
+    message.includes("show my memory")
   ) {
 
-    if (
-      !memory.notes ||
-      memory.notes.length === 0
-    ) {
+    const notes =
+      memory.notes
+        .map(item => `• ${item.text}`)
+        .join("\n");
 
-      return "Nothing permanent yet. Give me something worth remembering.";
-    }
+    const goals =
+      memory.goals
+        .filter(goal => !goal.completed)
+        .map(goal => `• ${goal.text}`)
+        .join("\n");
 
-    return "Here's what I remember: " +
-      memory.notes.join("; ");
+    const tasks =
+      memory.tasks
+        .filter(task => !task.completed)
+        .map(task => `• ${task.text}`)
+        .join("\n");
+
+    return `
+Here's what I have, Syd.
+
+Goals:
+${goals || "Nothing yet."}
+
+Tasks:
+${tasks || "Nothing yet."}
+
+Notes:
+${notes || "Nothing yet."}
+`.trim();
   }
 
 
-  // Forget everything
+  // -------------------------
+  // CLEAR MEMORY
+  // -------------------------
 
   if (
     message === "forget everything" ||
-    message === "forget all my memories"
+    message === "clear my memory"
   ) {
 
-    memory = {};
+    memory = {
+      profile: {},
+      goals: [],
+      tasks: [],
+      notes: [],
+      conversation: []
+    };
 
     saveMemory();
 
-    return "Done. Local memory cleared.";
+    return "Done. I've cleared EVE's local memory.";
   }
 
 
-  // Capabilities
+  // -------------------------
+  // CAPABILITIES
+  // -------------------------
 
   if (
     message.includes("what can you do")
   ) {
 
-    return "Right now I can talk, remember things locally, respond by voice, and run without an API. We're building the rest.";
+    return "Right now I can talk, listen, remember notes, track goals and tasks, and speak back to you. We're building the rest.";
   }
 
 
-  // Help
+  // -------------------------
+  // DEFAULT
+  // -------------------------
 
-  if (
-    message === "help" ||
-    message.includes("what should i do")
-  ) {
-
-    return "Give me a task, Syd. Try 'remember that I want to work on photography tonight.'";
-  }
-
-
-  // Default
-
-  return "I heard you, Syd. My full AI brain isn't connected yet, but my local core is working.";
+  return "I hear you, Syd. My full AI brain isn't connected yet, but I'm ready to learn.";
 }
 
 
