@@ -621,94 +621,53 @@ input.addEventListener(
 // -----------------------------
 
 
+// -----------------------------
+// VOICE INPUT
+// -----------------------------
+
 const SpeechRecognition =
   window.SpeechRecognition ||
   window.webkitSpeechRecognition;
 
-let recognition = null;
-let isListening = false;
-
 if (SpeechRecognition) {
 
-  recognition = new SpeechRecognition();
+  const recognition =
+    new SpeechRecognition();
 
   recognition.lang = "en-US";
   recognition.continuous = false;
-  recognition.interimResults = true;
+  recognition.interimResults = false;
 
   mic.addEventListener("click", () => {
 
-    if (isListening) {
-      recognition.stop();
-      return;
-    }
-
-    try {
-      recognition.start();
-    } catch (error) {
-      console.log("Voice already active.");
-    }
-  });
-
-  recognition.onstart = () => {
-
-    isListening = true;
-
-    status.textContent = "Listening, Syd...";
-
-    mic.textContent = "⏹️";
+    status.textContent = "Listening...";
 
     orb.classList.add("listening");
-  };
 
-  recognition.onresult = (event) => {
+    recognition.start();
 
-    let transcript = "";
+  });
 
-    for (
-      let i = event.resultIndex;
-      i < event.results.length;
-      i++
-    ) {
-      transcript +=
-        event.results[i][0].transcript;
-    }
+  recognition.onresult = event => {
+
+    const transcript =
+      event.results[0][0].transcript;
 
     input.value = transcript;
-  };
-
-  recognition.onend = () => {
-
-    isListening = false;
-
-    mic.textContent = "🎙️";
 
     orb.classList.remove("listening");
 
-    if (input.value.trim()) {
-      sendMessage();
-    } else {
-      status.textContent = "Ready when you are.";
-    }
+    sendMessage();
+
   };
 
-  recognition.onerror = (event) => {
+  recognition.onerror = () => {
 
-    isListening = false;
-
-    mic.textContent = "🎙️";
+    status.textContent =
+      "I couldn't hear that.";
 
     orb.classList.remove("listening");
 
-    console.log("Voice error:", event.error);
-
-    if (event.error === "not-allowed") {
-      status.textContent =
-        "Microphone permission is off.";
-    } else {
-      status.textContent =
-        "I couldn't hear that, Syd.";
-    }
   };
 
 } else {
@@ -716,11 +675,9 @@ if (SpeechRecognition) {
   mic.addEventListener("click", () => {
 
     status.textContent =
-      "Voice input isn't supported in this browser yet.";
+      "Voice input isn't supported here yet.";
 
   });
-
-}
 
 }
 
