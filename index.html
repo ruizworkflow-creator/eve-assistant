@@ -362,18 +362,28 @@ function think(text) {
 
   if (message.startsWith("remember that ")) {
 
-    const item =
-      original.substring(14).trim();
+  const item =
+    original.substring(14).trim();
 
-    memory.notes.push({
-      text: item,
-      date: new Date().toISOString()
-    });
+  const alreadyRemembered =
+    memory.notes.some(
+      note =>
+        note.text.toLowerCase() === item.toLowerCase()
+    );
 
-    saveMemory();
-
-    return `Got it, Syd. I'll remember that: "${item}"`;
+  if (alreadyRemembered) {
+    return `I already have that one, Syd.`;
   }
+
+  memory.notes.push({
+    text: item,
+    date: new Date().toISOString()
+  });
+
+  saveMemory();
+
+  return `Got it, Syd. I'll remember that: "${item}"`;
+}
 
 
   // -------------------------
